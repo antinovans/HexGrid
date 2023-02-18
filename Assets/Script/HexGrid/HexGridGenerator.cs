@@ -2,29 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class TileContainer
-{
-    public TileContainer(Vector2Int offsetCoor, Vector3 worldCoor)
-    {
-        this.offsetCoor = offsetCoor;
-        this.worldCoor = worldCoor;
-        this.neighbors = new List<TileContainer>();
-    }
-    // public List<GameObject> content;
-    public Vector2Int offsetCoor {get;}
-    public Vector3 worldCoor {get;}
-    public List<TileContainer> neighbors {get; set;}    
-    public static Vector3Int[] neighborDirs = new Vector3Int[] {
-        new Vector3Int(0, 1, -1),
-        new Vector3Int(0, -1, 1),
-        new Vector3Int(1, 0, -1),
-        new Vector3Int(-1, 0, 1),
-        new Vector3Int(1, -1, 0),
-        new Vector3Int(-1, 1, 0),
-    };
-
-   
-}
 public class HexGridGenerator : MonoBehaviour
 {
     [Header("Layout setting")]
@@ -69,9 +46,9 @@ public class HexGridGenerator : MonoBehaviour
                 // GenerateGridMesh(x, y);
                 GenerateGridMesh(x - mid.x, y - mid.y, worldPos);
                 //initialize tile containers
-                tileContainers.Add(new Vector2Int(x - mid.x, y - mid.y), 
-                new TileContainer(new Vector2Int(x - mid.x, y - mid.y), worldPos
-                ));
+                // tileContainers.Add(new Vector2Int(x - mid.x, y - mid.y), 
+                // new TileContainer(new Vector2Int(x - mid.x, y - mid.y), worldPos
+                // ));
             }
         }
 
@@ -79,15 +56,6 @@ public class HexGridGenerator : MonoBehaviour
         foreach(var container in tileContainers)
         {
             container.Value.neighbors = GetTileContainerNeighbor(container.Value);
-            //testing
-            // if(container.Key.x == 0)
-            // {
-            //     Debug.Log($"({container.Key.x},{container.Key.y})'s neighbors are:" );
-            //     foreach(var ng in container.Value.neighbors)
-            //     {
-            //         Debug.Log($"{ng.offsetCoor.x}, {ng.offsetCoor.y}");
-            //     }
-            // }
         }
     }
     private void GenerateGridMesh(int x, int y, Vector3 worldPos)
@@ -98,9 +66,19 @@ public class HexGridGenerator : MonoBehaviour
         render.innerRad = innerSize;
         render.hexHeight = height;
         render.SetHexMaterial(material);
-
+        //setting up renderer
         render.DrawHex();
         render.CombineHex();
+        //setting up collider and layer for raycast
+        MeshCollider mc = tile.AddComponent<MeshCollider>() as MeshCollider;
+        mc.convex = true;
+        mc.isTrigger = true;
+        tile.layer = 3;
+        //appending TileContainer.cs on each tile
+        TileContainer container = tile.AddComponent<TileContainer>() as TileContainer;
+        container.offsetCoor = new Vector2Int(x, y);
+        container.worldCoor = worldPos;
+        tileContainers.Add(container.offsetCoor, container);
 
         tile.transform.SetParent(transform, true);
         tile.transform.position = worldPos;
