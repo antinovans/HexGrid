@@ -37,6 +37,7 @@ public class HexRenderer : MonoBehaviour
     public float hexHeight;
     [SerializeField]
     public Material hex_material;
+    public Material hightlight_mat;
 
     private void Awake() {
         m_filter = GetComponent<MeshFilter>();
@@ -144,9 +145,12 @@ public class HexRenderer : MonoBehaviour
         float angleInRad = Mathf.PI /180.0f * angleInDeg;
         return new Vector3(hexRad * Mathf.Cos(angleInRad), height, hexRad * Mathf.Sin(angleInRad));
     }
-    public void SetHexMaterial(Material mat)
+    public void OnHighlight()
     {
-        hex_material = mat;
+        m_renderer.material = hightlight_mat;
+    }
+    public void OnDefault()
+    {
         m_renderer.material = hex_material;
     }
 }

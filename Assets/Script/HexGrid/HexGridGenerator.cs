@@ -16,13 +16,15 @@ public class HexGridGenerator : MonoBehaviour
     [SerializeField]
     private float height;
     [SerializeField]
-    public Material material;
+    private Material material;
+    [SerializeField]
+    private Material highlightMaterial;
 
-    public Dictionary<Vector2Int, TileContainer> tileContainers;
+    public Dictionary<Vector2Int, HexTile> tiles;
     public static HexGridGenerator instance;
 
     private void OnEnable() {
-        tileContainers = new Dictionary<Vector2Int, TileContainer>();
+        tiles = new Dictionary<Vector2Int, HexTile>();
         GenerateLayout();
     }
     private void Awake() {
@@ -53,7 +55,7 @@ public class HexGridGenerator : MonoBehaviour
         }
 
         //updating neighbors
-        foreach(var container in tileContainers)
+        foreach(var container in tiles)
         {
             container.Value.neighbors = GetTileContainerNeighbor(container.Value);
         }
@@ -61,24 +63,26 @@ public class HexGridGenerator : MonoBehaviour
     private void GenerateGridMesh(int x, int y, Vector3 worldPos)
     {
         GameObject tile = new GameObject($"Hex {x},{y}", typeof(HexRenderer));
-        var render = tile.GetComponent<HexRenderer>();
-        render.outerRad = outerSize;
-        render.innerRad = innerSize;
-        render.hexHeight = height;
-        render.SetHexMaterial(material);
+        var hexRenderer = tile.GetComponent<HexRenderer>();
+        hexRenderer.outerRad = outerSize;
+        hexRenderer.innerRad = innerSize;
+        hexRenderer.hexHeight = height;
+        hexRenderer.hex_material = material;
+        hexRenderer.hightlight_mat = highlightMaterial;
+        hexRenderer.OnDefault();
         //setting up renderer
-        render.DrawHex();
-        render.CombineHex();
+        hexRenderer.DrawHex();
+        hexRenderer.CombineHex();
         //setting up collider and layer for raycast
         MeshCollider mc = tile.AddComponent<MeshCollider>() as MeshCollider;
         mc.convex = true;
         mc.isTrigger = true;
         tile.layer = 3;
         //appending TileContainer.cs on each tile
-        TileContainer container = tile.AddComponent<TileContainer>() as TileContainer;
-        container.offsetCoor = new Vector2Int(x, y);
-        container.worldCoor = worldPos;
-        tileContainers.Add(container.offsetCoor, container);
+        HexTile hexTile = tile.AddComponent<HexTile>() as HexTile;
+        hexTile.offsetCoor = new Vector2Int(x, y);
+        hexTile.worldCoor = worldPos;
+        tiles.Add(hexTile.offsetCoor, hexTile);
 
         tile.transform.SetParent(transform, true);
         tile.transform.position = worldPos;
@@ -110,13 +114,13 @@ public class HexGridGenerator : MonoBehaviour
 
         return new Vector3(xPos, 0, zPos);
     }
-    private List<TileContainer> GetTileContainerNeighbor(TileContainer tileContainer)
+    private List<HexTile> GetTileContainerNeighbor(HexTile tile)
     {
-        List<TileContainer> neighbors = new List<TileContainer>();
-        Vector3Int tileCubeCoor = Utils.OffsetToCube(tileContainer.offsetCoor);
-        foreach(Vector3Int neighborDir in TileContainer.neighborDirs)
+        List<HexTile> neighbors = new List<HexTile>();
+        Vector3Int tileCubeCoor = Utils.OffsetToCube(tile.offsetCoor);
+        foreach(Vector3Int neighborDir in HexTile.neighborDirs)
         {
-            if(tileContainers.TryGetValue(Utils.CubeToOffset(tileCubeCoor + neighborDir), out TileContainer neighbor))
+            if(tiles.TryGetValue(Utils.CubeToOffset(tileCubeCoor + neighborDir), out HexTile neighbor))
                 neighbors.Add(neighbor);
         }
         return neighbors;

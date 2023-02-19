@@ -21,12 +21,16 @@ public class Raycast : MonoBehaviour
                 if(hit.collider.isTrigger)
                 {
                     var hitObj = hit.transform;
-                    hitObj.gameObject.TryGetComponent<TileContainer>(out TileContainer container);
+                    hitObj.gameObject.TryGetComponent<HexTile>(out HexTile container);
                     if(container != null)
                     {
                         Debug.Log($"Hex {container.offsetCoor.x},{container.offsetCoor.y}");
+                        return;
                     }
                 }
+            }
+            else{
+                Debug.Log("Hit nothing");
             }
         }
         
