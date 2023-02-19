@@ -28,8 +28,11 @@ public class HexGridGenerator : MonoBehaviour
         GenerateLayout();
     }
     private void Awake() {
-        instance = this;
-        
+        if(instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
+        DontDestroyOnLoad(gameObject);
     }
     // private void OnValidate() {
     //     if(Application.isPlaying)
@@ -69,7 +72,7 @@ public class HexGridGenerator : MonoBehaviour
         hexRenderer.hexHeight = height;
         hexRenderer.hex_material = material;
         hexRenderer.hightlight_mat = highlightMaterial;
-        hexRenderer.OnDefault();
+        hexRenderer.SwitchMaterial(MaterialType.Normal);
         //setting up renderer
         hexRenderer.DrawHex();
         hexRenderer.CombineHex();
@@ -80,9 +83,9 @@ public class HexGridGenerator : MonoBehaviour
         tile.layer = 3;
         //appending TileContainer.cs on each tile
         HexTile hexTile = tile.AddComponent<HexTile>() as HexTile;
-        hexTile.offsetCoor = new Vector2Int(x, y);
-        hexTile.worldCoor = worldPos;
-        tiles.Add(hexTile.offsetCoor, hexTile);
+        hexTile.offsetPos = new Vector2Int(x, y);
+        hexTile.worldPos = worldPos;
+        tiles.Add(hexTile.offsetPos, hexTile);
 
         tile.transform.SetParent(transform, true);
         tile.transform.position = worldPos;
@@ -117,7 +120,7 @@ public class HexGridGenerator : MonoBehaviour
     private List<HexTile> GetTileContainerNeighbor(HexTile tile)
     {
         List<HexTile> neighbors = new List<HexTile>();
-        Vector3Int tileCubeCoor = Utils.OffsetToCube(tile.offsetCoor);
+        Vector3Int tileCubeCoor = Utils.OffsetToCube(tile.offsetPos);
         foreach(Vector3Int neighborDir in HexTile.neighborDirs)
         {
             if(tiles.TryGetValue(Utils.CubeToOffset(tileCubeCoor + neighborDir), out HexTile neighbor))
@@ -125,4 +128,9 @@ public class HexGridGenerator : MonoBehaviour
         }
         return neighbors;
     }
+    public void ShowAllAvailableGrids()
+    {
+
+    }
 }
+

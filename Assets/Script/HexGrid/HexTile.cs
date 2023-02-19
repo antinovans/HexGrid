@@ -19,20 +19,32 @@ public class HexTile : MonoBehaviour
     //     this.neighbors = new List<TileContainer>();
     // }
     // public List<GameObject> content;
-    public Vector2Int offsetCoor {get; set;}
-    public Vector3 worldCoor {get; set;}
+    public Vector2Int offsetPos {get; set;}
+    public Vector3 worldPos {get; set;}
     public List<HexTile> neighbors {get; set;}    
-    private HexRenderer hexRenderer; 
+    private HexRenderer hexRenderer;
+    private bool isOccupied;
     private void Awake() {
         this.neighbors = new List<HexTile>();
         hexRenderer = GetComponent<HexRenderer>();
     }
-    public void OnRayExit()
+    void Start()
     {
-        hexRenderer.OnDefault();
+        EventManager.instance.matHighlightEvent += OnRayEnter;
+        EventManager.instance.matNormalizeEvent += OnRayExit;
     }
-    public void OnRayEnter()
+    public void OnRayExit(Vector2Int position)
     {
-        hexRenderer.OnHighlight();
+        if(offsetPos == position)
+            hexRenderer.SwitchMaterial(MaterialType.Normal);
+    }
+    public void OnRayEnter(Vector2Int position)
+    {
+        if(offsetPos == position)
+            hexRenderer.SwitchMaterial(MaterialType.Highlight);
+    }
+    private void OnDisable() {
+        EventManager.instance.matHighlightEvent -= OnRayEnter;
+        EventManager.instance.matNormalizeEvent -= OnRayExit;
     }
 }

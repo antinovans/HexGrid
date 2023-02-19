@@ -19,6 +19,13 @@ struct HexSegment
     }
 
 }
+public enum MaterialType
+{
+    Normal,
+    Highlight,
+    Available,
+    Occupied
+}
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 // [ExecuteInEditMode]
@@ -51,6 +58,7 @@ public class HexRenderer : MonoBehaviour
         m_filter.mesh = mesh;
         m_renderer.material = hex_material;
     }    
+    
 
     private void OnValidate() {
         // if(Application.isPlaying)
@@ -145,12 +153,26 @@ public class HexRenderer : MonoBehaviour
         float angleInRad = Mathf.PI /180.0f * angleInDeg;
         return new Vector3(hexRad * Mathf.Cos(angleInRad), height, hexRad * Mathf.Sin(angleInRad));
     }
-    public void OnHighlight()
+    // public void ShowHighlightMaterial()
+    // {
+    //     m_renderer.material = hightlight_mat;
+    // }
+    // public void ShowDefaultMaterial()
+    // {
+    //     m_renderer.material = hex_material;
+    // }
+    public void SwitchMaterial(MaterialType type)
     {
-        m_renderer.material = hightlight_mat;
-    }
-    public void OnDefault()
-    {
-        m_renderer.material = hex_material;
+        switch (type)
+        {
+            case MaterialType.Normal:
+                m_renderer.material = hex_material;
+                break;
+            case MaterialType.Highlight:
+                m_renderer.material = hightlight_mat;
+                break;
+            default:
+                return;
+        }
     }
 }

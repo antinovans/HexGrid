@@ -24,7 +24,7 @@ public class Raycast : MonoBehaviour
                     hitObj.gameObject.TryGetComponent<HexTile>(out HexTile container);
                     if(container != null)
                     {
-                        Debug.Log($"Hex {container.offsetCoor.x},{container.offsetCoor.y}");
+                        Debug.Log($"Hex {container.offsetPos.x},{container.offsetPos.y}");
                         return;
                     }
                 }

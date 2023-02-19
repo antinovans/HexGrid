@@ -5,6 +5,7 @@ using UnityEngine;
 public class ConstructionBuilder : MonoBehaviour
 {
     Camera playerCam;
+    GameObject construction;
     HexTile curTile;
     // Start is called before the first frame update
     void Start()
@@ -33,9 +34,11 @@ public class ConstructionBuilder : MonoBehaviour
                     if(curTile != tile)
                     {
                         if(curTile != null)
-                            curTile.OnRayExit();
+                            // curTile.OnRayExit();
+                            EventManager.instance.NormalizeMaterial(curTile.offsetPos);
                         curTile = tile;
-                        tile.OnRayEnter();
+                        // tile.OnRayEnter();
+                        EventManager.instance.HighlightMaterial(tile.offsetPos);
                     }
                         
                     // Debug.Log($"Hex {container.offsetCoor.x},{container.offsetCoor.y}");
@@ -44,7 +47,8 @@ public class ConstructionBuilder : MonoBehaviour
         }
         else{
             if(curTile != null)
-                curTile.OnRayExit();
+                // curTile.OnRayExit();
+                EventManager.instance.NormalizeMaterial(curTile.offsetPos);
             curTile = null;
         }
     }
