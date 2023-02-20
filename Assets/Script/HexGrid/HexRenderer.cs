@@ -42,9 +42,12 @@ public class HexRenderer : MonoBehaviour
     public float outerRad;
     [SerializeField]
     public float hexHeight;
-    [SerializeField]
-    public Material hex_material;
+    public Material normal_mat;
     public Material hightlight_mat;
+    public Material available_mat;
+    public Material occupied_mat;
+
+    private Material prevMat;
 
     private void Awake() {
         m_filter = GetComponent<MeshFilter>();
@@ -56,7 +59,7 @@ public class HexRenderer : MonoBehaviour
         Assert.IsNotNull(mesh);
         
         m_filter.mesh = mesh;
-        m_renderer.material = hex_material;
+        m_renderer.material = normal_mat;
     }    
     
 
@@ -153,26 +156,31 @@ public class HexRenderer : MonoBehaviour
         float angleInRad = Mathf.PI /180.0f * angleInDeg;
         return new Vector3(hexRad * Mathf.Cos(angleInRad), height, hexRad * Mathf.Sin(angleInRad));
     }
-    // public void ShowHighlightMaterial()
-    // {
-    //     m_renderer.material = hightlight_mat;
-    // }
-    // public void ShowDefaultMaterial()
-    // {
-    //     m_renderer.material = hex_material;
-    // }
     public void SwitchMaterial(MaterialType type)
     {
         switch (type)
         {
             case MaterialType.Normal:
-                m_renderer.material = hex_material;
+                m_renderer.material = normal_mat;
+                prevMat = normal_mat;
                 break;
             case MaterialType.Highlight:
                 m_renderer.material = hightlight_mat;
                 break;
+            case MaterialType.Available:
+                m_renderer.material = available_mat;
+                prevMat = available_mat;
+                break;
+            case MaterialType.Occupied:
+                m_renderer.material = occupied_mat;
+                prevMat = occupied_mat;
+                break;
             default:
                 return;
         }
+    }
+    public void RevertMaterial()
+    {
+        m_renderer.material = prevMat;
     }
 }

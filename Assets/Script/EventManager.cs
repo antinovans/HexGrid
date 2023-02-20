@@ -6,8 +6,11 @@ using System;
 public class EventManager : MonoBehaviour
 {
     public static EventManager instance;
-    public event Action<Vector2Int> matHighlightEvent;
-    public event Action<Vector2Int> matNormalizeEvent;
+    public event Action<Vector2Int> onHighlightEvent;
+    public event Action onNormalizeEvent;
+    public event Action<Vector2Int> onRevertEvent;
+    public event Action onSwitchToConstructionEvent;
+    public event Action<Vector2Int> onConstructEvent;
     private void Awake() {
         if(instance == null)
             instance = this;
@@ -17,10 +20,22 @@ public class EventManager : MonoBehaviour
     }
     public void HighlightMaterial(Vector2Int gridId)
     {
-        matHighlightEvent?.Invoke(gridId);
+        onHighlightEvent?.Invoke(gridId);
     }
-    public void NormalizeMaterial(Vector2Int gridId)
+    public void NormalizeMaterial()
     {
-        matNormalizeEvent?.Invoke(gridId);
+        onNormalizeEvent?.Invoke();
+    }
+    public void RevertMaterial(Vector2Int gridId)
+    {
+        onRevertEvent?.Invoke(gridId);
+    }
+    public void ShowAllAvailableGrids()
+    {
+        onSwitchToConstructionEvent?.Invoke();
+    }
+    public void BuildConstruction(Vector2Int gridId)
+    {
+        onConstructEvent?.Invoke(gridId);
     }
 }

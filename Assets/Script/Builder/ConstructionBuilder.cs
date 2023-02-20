@@ -1,24 +1,94 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum BuilderMode
+{
+    Navigation,
+    Selection,
+    Build
+}
 public class ConstructionBuilder : MonoBehaviour
 {
     Camera playerCam;
-    GameObject construction;
+    GameObject constructionPrefab;
+    HexTile prevTile;
     HexTile curTile;
+    public BuilderMode curMode;
+    private void Awake()
+    {
+        playerCam = GetComponent<Camera>();
+        curMode = BuilderMode.Navigation;
+        prevTile = null;
+        curTile = null;
+    }
     // Start is called before the first frame update
     void Start()
     {
-        playerCam = GetComponent<Camera>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        CastRay();
+        HandleBuildingMode();
+        HandleTileRenderer();
+        
     }
-    void CastRay()
+
+    private void HandleBuildingMode()
+    {
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            curMode = BuilderMode.Build;
+            EventManager.instance.ShowAllAvailableGrids();
+        }
+        if(Input.GetKeyDown(KeyCode.W))
+        {
+            curMode = BuilderMode.Navigation;
+            EventManager.instance.NormalizeMaterial();
+        }
+        if(curMode == BuilderMode.Build && Input.GetMouseButtonDown(0) && curTile!= null && !curTile.isOccupied)
+        {
+            EventManager.instance.BuildConstruction(curTile.offsetPos);
+        }
+    }
+
+    void HandleTileRenderer()
+    {
+        var tile = CastRay();
+        if(tile == prevTile)
+            return;
+        if (prevTile != null)
+            EventManager.instance.RevertMaterial(prevTile.offsetPos);
+        if (tile != null)
+        {
+            curTile = tile;
+            EventManager.instance.HighlightMaterial(curTile.offsetPos);
+            prevTile = curTile;
+        }
+        // switch (curMode)
+        // {
+        //     case BuilderMode.Navigation:
+        //         var tile = CastRay();
+        //         if(prevTile != null)
+        //             EventManager.instance.RevertMaterial(prevTile.offsetPos);
+        //         if(tile != null)
+        //         {
+        //             curTile = tile;
+        //             EventManager.instance.HighlightMaterial(curTile.offsetPos);
+        //             prevTile = curTile;
+        //         }
+        //         break;
+        //     case BuilderMode.Build:
+
+
+        //     default:
+        //         break;
+        // }
+    }
+    HexTile CastRay()
     {
         RaycastHit hit;
         Ray ray = playerCam.ScreenPointToRay(Input.mousePosition);
@@ -31,25 +101,42 @@ public class ConstructionBuilder : MonoBehaviour
                 hitObj.gameObject.TryGetComponent<HexTile>(out HexTile tile);
                 if (tile != null)
                 {
-                    if(curTile != tile)
-                    {
-                        if(curTile != null)
-                            // curTile.OnRayExit();
-                            EventManager.instance.NormalizeMaterial(curTile.offsetPos);
-                        curTile = tile;
-                        // tile.OnRayEnter();
-                        EventManager.instance.HighlightMaterial(tile.offsetPos);
-                    }
-                        
-                    // Debug.Log($"Hex {container.offsetCoor.x},{container.offsetCoor.y}");
+                    return tile;
                 }
             }
         }
-        else{
-            if(curTile != null)
-                // curTile.OnRayExit();
-                EventManager.instance.NormalizeMaterial(curTile.offsetPos);
-            curTile = null;
-        }
+        return null;
     }
+    // void CastRay()
+    // {
+    //     RaycastHit hit;
+    //     Ray ray = playerCam.ScreenPointToRay(Input.mousePosition);
+    //     if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << 3))
+    //     {
+    //         // Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+    //         if (hit.collider.isTrigger)
+    //         {
+    //             var hitObj = hit.transform;
+    //             hitObj.gameObject.TryGetComponent<HexTile>(out HexTile tile);
+    //             if (tile != null)
+    //             {
+    //                 if(curTile != tile)
+    //                 {
+    //                     if(curTile != null)
+    //                         // curTile.OnRayExit();
+    //                         EventManager.instance.NormalizeMaterial(curTile.offsetPos);
+    //                     curTile = tile;
+    //                     // tile.OnRayEnter();
+    //                     EventManager.instance.HighlightMaterial(tile.offsetPos);
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     else{
+    //         if(curTile != null)
+    //             // curTile.OnRayExit();
+    //             EventManager.instance.NormalizeMaterial(curTile.offsetPos);
+    //         curTile = null;
+    //     }
+    // }
 }

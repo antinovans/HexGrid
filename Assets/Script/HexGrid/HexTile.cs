@@ -12,39 +12,55 @@ public class HexTile : MonoBehaviour
         new Vector3Int(1, -1, 0),
         new Vector3Int(-1, 1, 0),
     };
-    // public TileContainer(Vector2Int offsetCoor, Vector3 worldCoor)
-    // {
-    //     this.offsetCoor = offsetCoor;
-    //     this.worldCoor = worldCoor;
-    //     this.neighbors = new List<TileContainer>();
-    // }
-    // public List<GameObject> content;
     public Vector2Int offsetPos {get; set;}
     public Vector3 worldPos {get; set;}
     public List<HexTile> neighbors {get; set;}    
     private HexRenderer hexRenderer;
-    private bool isOccupied;
+    public bool isOccupied;
     private void Awake() {
         this.neighbors = new List<HexTile>();
         hexRenderer = GetComponent<HexRenderer>();
+        isOccupied = false;
     }
     void Start()
     {
-        EventManager.instance.matHighlightEvent += OnRayEnter;
-        EventManager.instance.matNormalizeEvent += OnRayExit;
+        EventManager.instance.onHighlightEvent += Rdr_Highlight;
+        EventManager.instance.onNormalizeEvent += Rdr_Normalize;
+        EventManager.instance.onRevertEvent += Rdr_Revert;
+        EventManager.instance.onSwitchToConstructionEvent += Rdr_ShowAvailable;
+        EventManager.instance.onConstructEvent += Rdr_Occupy;
     }
-    public void OnRayExit(Vector2Int position)
+    public void Rdr_Revert(Vector2Int position)
     {
         if(offsetPos == position)
-            hexRenderer.SwitchMaterial(MaterialType.Normal);
+            hexRenderer.RevertMaterial();
     }
-    public void OnRayEnter(Vector2Int position)
+    public void Rdr_Normalize()
+    {
+        hexRenderer.SwitchMaterial(MaterialType.Normal);
+    }
+    public void Rdr_Highlight(Vector2Int position)
     {
         if(offsetPos == position)
             hexRenderer.SwitchMaterial(MaterialType.Highlight);
     }
+    public void Rdr_Occupy(Vector2Int position)
+    {
+        if(offsetPos == position)
+            hexRenderer.SwitchMaterial(MaterialType.Occupied);
+    }
+    public void Rdr_ShowAvailable()
+    {
+        if(isOccupied)
+            hexRenderer.SwitchMaterial(MaterialType.Occupied);
+        else
+            hexRenderer.SwitchMaterial(MaterialType.Available);
+    }
     private void OnDisable() {
-        EventManager.instance.matHighlightEvent -= OnRayEnter;
-        EventManager.instance.matNormalizeEvent -= OnRayExit;
+        EventManager.instance.onHighlightEvent -= Rdr_Highlight;
+        EventManager.instance.onNormalizeEvent -= Rdr_Normalize;
+        EventManager.instance.onRevertEvent -= Rdr_Revert;
+        EventManager.instance.onSwitchToConstructionEvent -= Rdr_ShowAvailable;
+        EventManager.instance.onConstructEvent -= Rdr_Occupy;
     }
 }

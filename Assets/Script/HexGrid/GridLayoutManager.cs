@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class HexGridGenerator : MonoBehaviour
+public class GridLayoutManager : MonoBehaviour
 {
     [Header("Layout setting")]
     public Vector2Int gridSize;
@@ -15,13 +15,22 @@ public class HexGridGenerator : MonoBehaviour
     private float innerSize;
     [SerializeField]
     private float height;
+    [Header("Hex Grid Renderer Attribute")]
     [SerializeField]
-    private Material material;
+    private Material idleMaterial;
     [SerializeField]
     private Material highlightMaterial;
+    [SerializeField]
+    private Material availableMaterial;
+    [SerializeField]
+    private Material occupiedMaterial;
+    [Header("buildings prefabs")]
+    [SerializeField]
+    private GameObject building;
+    
 
     public Dictionary<Vector2Int, HexTile> tiles;
-    public static HexGridGenerator instance;
+    public static GridLayoutManager instance;
 
     private void OnEnable() {
         tiles = new Dictionary<Vector2Int, HexTile>();
@@ -33,6 +42,12 @@ public class HexGridGenerator : MonoBehaviour
         else
             Destroy(gameObject);
         DontDestroyOnLoad(gameObject);
+    }
+    private void Start() {
+        EventManager.instance.onConstructEvent += BuildConstruction;
+    }
+    private void OnDisable() {
+        EventManager.instance.onConstructEvent -= BuildConstruction;
     }
     // private void OnValidate() {
     //     if(Application.isPlaying)
@@ -70,8 +85,10 @@ public class HexGridGenerator : MonoBehaviour
         hexRenderer.outerRad = outerSize;
         hexRenderer.innerRad = innerSize;
         hexRenderer.hexHeight = height;
-        hexRenderer.hex_material = material;
+        hexRenderer.normal_mat = idleMaterial;
         hexRenderer.hightlight_mat = highlightMaterial;
+        hexRenderer.available_mat = availableMaterial;
+        hexRenderer.occupied_mat = occupiedMaterial;
         hexRenderer.SwitchMaterial(MaterialType.Normal);
         //setting up renderer
         hexRenderer.DrawHex();
@@ -81,7 +98,7 @@ public class HexGridGenerator : MonoBehaviour
         mc.convex = true;
         mc.isTrigger = true;
         tile.layer = 3;
-        //appending TileContainer.cs on each tile
+        //appending HexTile.cs on each tile
         HexTile hexTile = tile.AddComponent<HexTile>() as HexTile;
         hexTile.offsetPos = new Vector2Int(x, y);
         hexTile.worldPos = worldPos;
@@ -128,9 +145,16 @@ public class HexGridGenerator : MonoBehaviour
         }
         return neighbors;
     }
-    public void ShowAllAvailableGrids()
+    public void BuildConstruction(Vector2Int position)
     {
-
+        tiles.TryGetValue(position, out HexTile tile);
+        if(tile != null)
+        {
+            var model = Instantiate(building, tile.worldPos, Quaternion.identity);
+            model.transform.SetParent(tile.transform, true);
+            tile.isOccupied = true;
+        }
     }
+    
 }
 
