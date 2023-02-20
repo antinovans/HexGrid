@@ -30,10 +30,12 @@ public class GridLayoutManager : MonoBehaviour
     
 
     public Dictionary<Vector2Int, HexTile> tiles;
+    public Dictionary<Vector2Int, HexRenderer> tileRenderers;
     public static GridLayoutManager instance;
 
     private void OnEnable() {
         tiles = new Dictionary<Vector2Int, HexTile>();
+        tileRenderers = new Dictionary<Vector2Int, HexRenderer>();
         GenerateLayout();
     }
     private void Awake() {
@@ -44,9 +46,19 @@ public class GridLayoutManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
     private void Start() {
+        EventManager.instance.onHighlightEvent += Rdr_Highlight;
+        EventManager.instance.onNormalizeEvent += Rdr_Normalize;
+        EventManager.instance.onRevertEvent += Rdr_Revert;
+        EventManager.instance.onSwitchToConstructionEvent += Rdr_ShowAvailable;
+        EventManager.instance.onConstructEvent += Rdr_Occupy;
         EventManager.instance.onConstructEvent += BuildConstruction;
     }
     private void OnDisable() {
+        EventManager.instance.onHighlightEvent -= Rdr_Highlight;
+        EventManager.instance.onNormalizeEvent -= Rdr_Normalize;
+        EventManager.instance.onRevertEvent -= Rdr_Revert;
+        EventManager.instance.onSwitchToConstructionEvent -= Rdr_ShowAvailable;
+        EventManager.instance.onConstructEvent -= Rdr_Occupy;
         EventManager.instance.onConstructEvent -= BuildConstruction;
     }
     // private void OnValidate() {
@@ -80,8 +92,10 @@ public class GridLayoutManager : MonoBehaviour
     }
     private void GenerateGridMesh(int x, int y, Vector3 worldPos)
     {
+        Vector2Int pos =  new Vector2Int(x, y);
         GameObject tile = new GameObject($"Hex {x},{y}", typeof(HexRenderer));
         var hexRenderer = tile.GetComponent<HexRenderer>();
+        tileRenderers.Add(pos, hexRenderer);
         hexRenderer.outerRad = outerSize;
         hexRenderer.innerRad = innerSize;
         hexRenderer.hexHeight = height;
@@ -100,13 +114,14 @@ public class GridLayoutManager : MonoBehaviour
         tile.layer = 3;
         //appending HexTile.cs on each tile
         HexTile hexTile = tile.AddComponent<HexTile>() as HexTile;
-        hexTile.offsetPos = new Vector2Int(x, y);
+        hexTile.offsetPos = pos;
         hexTile.worldPos = worldPos;
-        tiles.Add(hexTile.offsetPos, hexTile);
+        tiles.Add(pos, hexTile);
 
         tile.transform.SetParent(transform, true);
         tile.transform.position = worldPos;
     }
+    //helper function for calculate the world position of each Hex Mesh
     private Vector3 Coordinate2WorldPos(int x, int y)
     {
         int row = x;
@@ -134,6 +149,9 @@ public class GridLayoutManager : MonoBehaviour
 
         return new Vector3(xPos, 0, zPos);
     }
+
+
+    // Calculate neighbors of each tile
     private List<HexTile> GetTileContainerNeighbor(HexTile tile)
     {
         List<HexTile> neighbors = new List<HexTile>();
@@ -145,6 +163,9 @@ public class GridLayoutManager : MonoBehaviour
         }
         return neighbors;
     }
+
+
+    /*↓↓↓↓↓ Tile related events ↓↓↓↓↓*/
     public void BuildConstruction(Vector2Int position)
     {
         tiles.TryGetValue(position, out HexTile tile);
@@ -155,6 +176,50 @@ public class GridLayoutManager : MonoBehaviour
             tile.isOccupied = true;
         }
     }
-    
+    /*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*/
+
+    /*↓↓↓↓↓ Renderer related events ↓↓↓↓↓*/
+    public void Rdr_Revert(Vector2Int position)
+    {
+        tileRenderers.TryGetValue(position, out HexRenderer hexRenderer);
+        if(hexRenderer != null)
+            hexRenderer.RevertMaterial();
+    }
+    public void Rdr_Normalize()
+    {
+        foreach(KeyValuePair<Vector2Int, HexRenderer> renderer in tileRenderers)
+        {
+            renderer.Value.SwitchMaterial(MaterialType.Normal);
+        }
+    }
+    public void Rdr_Highlight(Vector2Int position)
+    {
+        tileRenderers.TryGetValue(position, out HexRenderer hexRenderer);
+        if(hexRenderer != null)
+            hexRenderer.SwitchMaterial(MaterialType.Highlight);
+    }
+    public void Rdr_Occupy(Vector2Int position)
+    {
+        tileRenderers.TryGetValue(position, out HexRenderer hexRenderer);
+        if(hexRenderer != null)
+            hexRenderer.SwitchMaterial(MaterialType.Occupied);
+    }
+    public void Rdr_ShowAvailable()
+    {
+        foreach(KeyValuePair<Vector2Int, HexTile> tile in tiles)
+        {
+            if(tile.Value.isOccupied)
+            {
+                tileRenderers.TryGetValue(tile.Value.offsetPos, out HexRenderer hexRenderer);
+                hexRenderer?.SwitchMaterial(MaterialType.Occupied);
+            }
+            else
+            {
+                tileRenderers.TryGetValue(tile.Value.offsetPos, out HexRenderer hexRenderer);
+                hexRenderer?.SwitchMaterial(MaterialType.Available);
+            }
+        }
+    }
+    /*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*/
 }
 
