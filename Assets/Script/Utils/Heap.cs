@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 public class Heap<T>
 {
-    private List<T> m_heap;
+    public List<T> m_heap;
     private Comparer<T> _comparer;
 
     public int Count => m_heap.Count;
@@ -38,9 +38,9 @@ public class Heap<T>
         int left = 2 * index + 1;
         int right = 2 * index + 2;
         int max = index;
-        if(left < m_heap.Count - 1 && _comparer.Compare(m_heap[left], m_heap[max]) < 0)
+        if(left < m_heap.Count && _comparer.Compare(m_heap[left], m_heap[max]) < 0)
             max = left;
-        if(right < m_heap.Count - 1 && _comparer.Compare(m_heap[right], m_heap[max]) < 0)
+        if(right < m_heap.Count && _comparer.Compare(m_heap[right], m_heap[max]) < 0)
             max = right;
         if(max != index)
         {
@@ -51,7 +51,7 @@ public class Heap<T>
     private void HeapifyUp(int index)
     {
         // Debug.Assert(index >=0 && index < m_heap.Count);
-        if(index == 0)
+        if(index <= 0)
             return;
         int parent = (index - 1)/2;
         
