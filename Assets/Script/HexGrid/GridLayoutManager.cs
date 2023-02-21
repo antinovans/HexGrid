@@ -149,8 +149,6 @@ public class GridLayoutManager : MonoBehaviour
 
         return new Vector3(xPos, 0, zPos);
     }
-
-
     // Calculate neighbors of each tile
     private List<HexTile> GetTileContainerNeighbor(HexTile tile)
     {
@@ -164,7 +162,7 @@ public class GridLayoutManager : MonoBehaviour
         return neighbors;
     }
 
-
+    /*************events**************/
     /*↓↓↓↓↓ Tile related events ↓↓↓↓↓*/
     public void BuildConstruction(Vector2Int position)
     {
@@ -176,9 +174,9 @@ public class GridLayoutManager : MonoBehaviour
             tile.isOccupied = true;
         }
     }
-    /*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*/
+    /*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*/
 
-    /*↓↓↓↓↓ Renderer related events ↓↓↓↓↓*/
+    /*↓↓↓ Renderer related events ↓↓↓*/
     public void Rdr_Revert(Vector2Int position)
     {
         tileRenderers.TryGetValue(position, out HexRenderer hexRenderer);
@@ -220,6 +218,12 @@ public class GridLayoutManager : MonoBehaviour
             }
         }
     }
-    /*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*/
+    /*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*/
+
+    /***********path finding**********/
+    public List<HexTile> AStarPathGenerate(HexTile begin, HexTile end)
+    {
+        return null;
+    }
 }
 

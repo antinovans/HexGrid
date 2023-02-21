@@ -68,25 +68,6 @@ public class ConstructionBuilder : MonoBehaviour
             EventManager.instance.HighlightMaterial(curTile.offsetPos);
             prevTile = curTile;
         }
-        // switch (curMode)
-        // {
-        //     case BuilderMode.Navigation:
-        //         var tile = CastRay();
-        //         if(prevTile != null)
-        //             EventManager.instance.RevertMaterial(prevTile.offsetPos);
-        //         if(tile != null)
-        //         {
-        //             curTile = tile;
-        //             EventManager.instance.HighlightMaterial(curTile.offsetPos);
-        //             prevTile = curTile;
-        //         }
-        //         break;
-        //     case BuilderMode.Build:
-
-
-        //     default:
-        //         break;
-        // }
     }
     HexTile CastRay()
     {
@@ -107,36 +88,4 @@ public class ConstructionBuilder : MonoBehaviour
         }
         return null;
     }
-    // void CastRay()
-    // {
-    //     RaycastHit hit;
-    //     Ray ray = playerCam.ScreenPointToRay(Input.mousePosition);
-    //     if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << 3))
-    //     {
-    //         // Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-    //         if (hit.collider.isTrigger)
-    //         {
-    //             var hitObj = hit.transform;
-    //             hitObj.gameObject.TryGetComponent<HexTile>(out HexTile tile);
-    //             if (tile != null)
-    //             {
-    //                 if(curTile != tile)
-    //                 {
-    //                     if(curTile != null)
-    //                         // curTile.OnRayExit();
-    //                         EventManager.instance.NormalizeMaterial(curTile.offsetPos);
-    //                     curTile = tile;
-    //                     // tile.OnRayEnter();
-    //                     EventManager.instance.HighlightMaterial(tile.offsetPos);
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     else{
-    //         if(curTile != null)
-    //             // curTile.OnRayExit();
-    //             EventManager.instance.NormalizeMaterial(curTile.offsetPos);
-    //         curTile = null;
-    //     }
-    // }
 }

@@ -24,4 +24,26 @@ public class Utils
         int offsetX = cubeCoor.y + (offsetY + offsetY % 2) /2;
         return new Vector2Int(offsetX, offsetY);
     }
+    public static Vector3Int HexPosAdd(HexTile t1, HexTile t2)
+    {
+        Vector3Int cubePos1 = OffsetToCube(t1.offsetPos);
+        Vector3Int cubePos2 = OffsetToCube(t2.offsetPos);
+        return new Vector3Int(cubePos1.x + cubePos2.x,
+         cubePos1.y + cubePos2.y, cubePos1.z + cubePos2.z);
+    }
+    public static Vector3Int HexPosSubtract(HexTile t1, HexTile t2)
+    {
+        Vector3Int cubePos1 = OffsetToCube(t1.offsetPos);
+        Vector3Int cubePos2 = OffsetToCube(t2.offsetPos);
+        return new Vector3Int(cubePos1.x - cubePos2.x,
+         cubePos1.y - cubePos2.y, cubePos1.z - cubePos2.z);
+    }
+    public static int HexPosDistance(HexTile t1, HexTile t2)
+    {
+        Vector3Int cubePos1 = OffsetToCube(t1.offsetPos);
+        Vector3Int cubePos2 = OffsetToCube(t2.offsetPos);
+        return (Mathf.Abs(cubePos1.x - cubePos2.x) +
+                Mathf.Abs(cubePos1.y - cubePos2.y) + 
+                Mathf.Abs(cubePos1.z - cubePos2.z))/2;
+    }
 }

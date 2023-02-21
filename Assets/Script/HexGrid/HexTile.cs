@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class HexTile : MonoBehaviour
 {
+    //length is 6
     public static Vector3Int[] neighborDirs = new Vector3Int[] {
         new Vector3Int(0, 1, -1),
         new Vector3Int(0, -1, 1),
@@ -14,7 +15,8 @@ public class HexTile : MonoBehaviour
     };
     public Vector2Int offsetPos {get; set;}
     public Vector3 worldPos {get; set;}
-    public List<HexTile> neighbors {get; set;}    
+    public List<HexTile> neighbors {get; set;}
+    public int curHeuristic = 0;    
     public bool isOccupied;
     private void Awake() {
         this.neighbors = new List<HexTile>();

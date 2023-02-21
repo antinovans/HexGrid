@@ -170,13 +170,13 @@ MonoBehaviour:
   gridSize: {x: 10, y: 10}
   origin: {x: 0, y: 0}
   outerSize: 0.5
-  innerSize: 0.3
-  height: 0.2
+  innerSize: 0.45
+  height: 0.05
   idleMaterial: {fileID: 2100000, guid: 64b5f0b0eb295ac4fb4be3a6b8048a65, type: 2}
   highlightMaterial: {fileID: 2100000, guid: d26e91b22ca47e5418b51ed80285ee46, type: 2}
   availableMaterial: {fileID: 2100000, guid: e5f77feabe980964ba614c9b5cf97c5f, type: 2}
   occupiedMaterial: {fileID: 2100000, guid: 3969269a5b0a6dc4188cb6120bc75988, type: 2}
-  building: {fileID: 1325648128862833328, guid: f23afb17513c72342b5d500c7342141a, type: 3}
+  building: {fileID: 3409613494047555956, guid: 2457b778db0a8fa43bde3dc6469816e5, type: 3}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
