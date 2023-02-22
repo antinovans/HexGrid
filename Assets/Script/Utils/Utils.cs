@@ -12,7 +12,7 @@ public class Utils
         //      o    
         //+s         +r
         int q = offsetCoor.y;
-        int r = offsetCoor.x - (offsetCoor.y + offsetCoor.y % 2) / 2;
+        int r = offsetCoor.x - (q - Mathf.Abs(q % 2)) / 2;
         return new Vector3Int(q, r, -q-r);
         // 1,0 =>0, 1, -1
         // 0,1 =>1, -1, 0
@@ -20,9 +20,9 @@ public class Utils
 
     public static Vector2Int CubeToOffset(Vector3Int cubeCoor)
     {
-        int offsetY = cubeCoor.x;
-        int offsetX = cubeCoor.y + (offsetY + offsetY % 2) /2;
-        return new Vector2Int(offsetX, offsetY);
+        int col = cubeCoor.x;
+        int row = cubeCoor.y + (cubeCoor.x - Mathf.Abs(cubeCoor.x % 2)) /2;
+        return new Vector2Int(row, col);
     }
     public static Vector3Int HexPosAdd(HexTile t1, HexTile t2)
     {

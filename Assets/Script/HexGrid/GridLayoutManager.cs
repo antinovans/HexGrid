@@ -27,25 +27,28 @@ public class GridLayoutManager : MonoBehaviour
     [Header("buildings prefabs")]
     [SerializeField]
     private GameObject building;
-    
+
 
     public Dictionary<Vector2Int, HexTile> tiles;
     public Dictionary<Vector2Int, HexRenderer> tileRenderers;
     public static GridLayoutManager instance;
 
-    private void OnEnable() {
+    private void OnEnable()
+    {
         tiles = new Dictionary<Vector2Int, HexTile>();
         tileRenderers = new Dictionary<Vector2Int, HexRenderer>();
         GenerateLayout();
     }
-    private void Awake() {
-        if(instance == null)
+    private void Awake()
+    {
+        if (instance == null)
             instance = this;
         else
             Destroy(gameObject);
         DontDestroyOnLoad(gameObject);
     }
-    private void Start() {
+    private void Start()
+    {
         EventManager.instance.onHighlightEvent += Rdr_Highlight;
         EventManager.instance.onNormalizeEvent += Rdr_Normalize;
         EventManager.instance.onRevertEvent += Rdr_Revert;
@@ -53,7 +56,8 @@ public class GridLayoutManager : MonoBehaviour
         EventManager.instance.onConstructEvent += Rdr_Occupy;
         EventManager.instance.onConstructEvent += BuildConstruction;
     }
-    private void OnDisable() {
+    private void OnDisable()
+    {
         EventManager.instance.onHighlightEvent -= Rdr_Highlight;
         EventManager.instance.onNormalizeEvent -= Rdr_Normalize;
         EventManager.instance.onRevertEvent -= Rdr_Revert;
@@ -69,10 +73,10 @@ public class GridLayoutManager : MonoBehaviour
     {
         //used to normalize the layout
         //make the central point (0,0)
-        Vector2Int mid = new Vector2Int(gridSize.x/2, gridSize.y/2);
-        for(int x = 0; x < gridSize.x; x++)
+        Vector2Int mid = new Vector2Int(gridSize.x / 2, gridSize.y / 2);
+        for (int x = 0; x < gridSize.x; x++)
         {
-            for(int y = 0; y < gridSize.y; y++)
+            for (int y = 0; y < gridSize.y; y++)
             {
                 Vector3 worldPos = Coordinate2WorldPos(x - mid.x, y - mid.y);
                 // GenerateGridMesh(x, y);
@@ -85,14 +89,14 @@ public class GridLayoutManager : MonoBehaviour
         }
 
         //updating neighbors
-        foreach(var container in tiles)
+        foreach (var container in tiles)
         {
             container.Value.neighbors = GetTileContainerNeighbor(container.Value);
         }
     }
     private void GenerateGridMesh(int x, int y, Vector3 worldPos)
     {
-        Vector2Int pos =  new Vector2Int(x, y);
+        Vector2Int pos = new Vector2Int(x, y);
         GameObject tile = new GameObject($"Hex {x},{y}", typeof(HexRenderer));
         var hexRenderer = tile.GetComponent<HexRenderer>();
         tileRenderers.Add(pos, hexRenderer);
@@ -136,14 +140,14 @@ public class GridLayoutManager : MonoBehaviour
         float offset;
         float size = outerSize;
 
-        shouldOffset =  Mathf.Abs(col) % 2 == 1;
-        width = 2* size;
+        shouldOffset = Mathf.Abs(col) % 2 == 1;
+        width = 2 * size;
         height = Mathf.Sqrt(3) * size;
 
-        horizontalDis = 3*width/ 4;
+        horizontalDis = 3 * width / 4;
         verticalDis = height;
 
-        offset = shouldOffset ? height/2 : 0;
+        offset = shouldOffset ? height / 2 : 0;
         xPos = (col + origin.x) * horizontalDis;
         zPos = (row + origin.y) * verticalDis + offset;
 
@@ -154,9 +158,9 @@ public class GridLayoutManager : MonoBehaviour
     {
         List<HexTile> neighbors = new List<HexTile>();
         Vector3Int tileCubeCoor = Utils.OffsetToCube(tile.offsetPos);
-        foreach(Vector3Int neighborDir in HexTile.neighborDirs)
+        foreach (Vector3Int neighborDir in HexTile.neighborDirs)
         {
-            if(tiles.TryGetValue(Utils.CubeToOffset(tileCubeCoor + neighborDir), out HexTile neighbor))
+            if (tiles.TryGetValue(Utils.CubeToOffset(tileCubeCoor + neighborDir), out HexTile neighbor))
                 neighbors.Add(neighbor);
         }
         return neighbors;
@@ -167,7 +171,7 @@ public class GridLayoutManager : MonoBehaviour
     public void BuildConstruction(Vector2Int position)
     {
         tiles.TryGetValue(position, out HexTile tile);
-        if(tile != null)
+        if (tile != null)
         {
             // Debug.Log($"Current tile {tile.offsetPos.x}, {tile.offsetPos.y}");
             var model = Instantiate(building, tile.worldPos, Quaternion.identity);
@@ -185,12 +189,12 @@ public class GridLayoutManager : MonoBehaviour
     public void Rdr_Revert(Vector2Int position)
     {
         tileRenderers.TryGetValue(position, out HexRenderer hexRenderer);
-        if(hexRenderer != null)
+        if (hexRenderer != null)
             hexRenderer.RevertMaterial();
     }
     public void Rdr_Normalize()
     {
-        foreach(KeyValuePair<Vector2Int, HexRenderer> renderer in tileRenderers)
+        foreach (KeyValuePair<Vector2Int, HexRenderer> renderer in tileRenderers)
         {
             renderer.Value.SwitchMaterial(MaterialType.Normal);
         }
@@ -198,20 +202,20 @@ public class GridLayoutManager : MonoBehaviour
     public void Rdr_Highlight(Vector2Int position)
     {
         tileRenderers.TryGetValue(position, out HexRenderer hexRenderer);
-        if(hexRenderer != null)
+        if (hexRenderer != null)
             hexRenderer.SwitchMaterial(MaterialType.Highlight);
     }
     public void Rdr_Occupy(Vector2Int position)
     {
         tileRenderers.TryGetValue(position, out HexRenderer hexRenderer);
-        if(hexRenderer != null)
+        if (hexRenderer != null)
             hexRenderer.SwitchMaterial(MaterialType.Occupied);
     }
     public void Rdr_ShowAvailable()
     {
-        foreach(KeyValuePair<Vector2Int, HexTile> tile in tiles)
+        foreach (KeyValuePair<Vector2Int, HexTile> tile in tiles)
         {
-            if(tile.Value.isOccupied)
+            if (tile.Value.isOccupied)
             {
                 tileRenderers.TryGetValue(tile.Value.offsetPos, out HexRenderer hexRenderer);
                 hexRenderer?.SwitchMaterial(MaterialType.Occupied);

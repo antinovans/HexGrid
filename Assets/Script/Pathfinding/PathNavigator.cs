@@ -34,12 +34,10 @@ public class PathNavigator : MonoBehaviour
             nextTile = toVisit.Pop();
         if(Vector3.Distance(transform.position, nextTile.worldPos) < 0.01f)
         {
-            Debug.Log($"arrived at tile {nextTile.offsetPos.x}, {nextTile.offsetPos.y}");
             curTile = nextTile;
             if(toVisit.Count > 0)
             {
                 nextTile = toVisit.Pop();
-                Debug.Log($"next tile is {nextTile.offsetPos.x}, {nextTile.offsetPos.y}");
             }        
         }
         //moving 
