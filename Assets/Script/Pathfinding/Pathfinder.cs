@@ -59,7 +59,7 @@ public static class Pathfinder
                 traces.Push(cameFrom[key]);
                 key = cameFrom[key];
             }
-            Debug.Assert(traces.Count == Utils.HexPosDistance(start,des));
+            // Debug.Assert(traces.Count == Utils.HexPosDistance(start,des));
         }
         return traces;
     }

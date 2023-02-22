@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class PathFinderTest : MonoBehaviour
 {
+    public PathNavigator navigator;
     public Vector2Int start;
     public Vector2Int end;
     // Start is called before the first frame update
     void Start()
     {
-        var s = Pathfinder.FindPath(GridLayoutManager.instance.tiles[start], GridLayoutManager.instance.tiles[end]);
-        Debug.Log(s.Count);
+        navigator.SetStartPosition(GridLayoutManager.instance.tiles[start]);
+        navigator.SetDestination(GridLayoutManager.instance.tiles[end]);
         // PrintStack(s);
     }
 

@@ -169,9 +169,14 @@ public class GridLayoutManager : MonoBehaviour
         tiles.TryGetValue(position, out HexTile tile);
         if(tile != null)
         {
+            // Debug.Log($"Current tile {tile.offsetPos.x}, {tile.offsetPos.y}");
             var model = Instantiate(building, tile.worldPos, Quaternion.identity);
             model.transform.SetParent(tile.transform, true);
             tile.isOccupied = true;
+            // foreach(var neighbor in tile.neighbors)
+            // {
+            //     Debug.Log($"neighbor tile {neighbor.offsetPos.x}, {neighbor.offsetPos.y}");
+            // }
         }
     }
     /*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*/
