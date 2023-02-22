@@ -219,11 +219,5 @@ public class GridLayoutManager : MonoBehaviour
         }
     }
     /*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*/
-
-    /***********path finding**********/
-    public List<HexTile> AStarPathGenerate(HexTile begin, HexTile end)
-    {
-        return null;
-    }
 }
 

@@ -46,4 +46,10 @@ public class Utils
                 Mathf.Abs(cubePos1.y - cubePos2.y) + 
                 Mathf.Abs(cubePos1.z - cubePos2.z))/2;
     }
+    public static int HexPosDistance(Vector3Int cubePos1, Vector3Int cubePos2)
+    {
+        return (Mathf.Abs(cubePos1.x - cubePos2.x) +
+                Mathf.Abs(cubePos1.y - cubePos2.y) + 
+                Mathf.Abs(cubePos1.z - cubePos2.z))/2;
+    }
 }

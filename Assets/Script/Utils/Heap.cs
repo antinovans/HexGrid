@@ -33,6 +33,10 @@ public class Heap<T>
     {
         return m_heap.Count == 0;
     }
+    public void Clear()
+    {
+        m_heap.Clear();
+    }
     private void HeapifyDown(int index)
     {
         int left = 2 * index + 1;
