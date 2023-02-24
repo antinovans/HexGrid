@@ -1,20 +1,26 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PathNavigator : MonoBehaviour
 {
-    private Stack<HexTile> toVisit;
     public HexTile curTile {get; set;}
-    public HexTile nextTile {get; set;}
+    private HexTile nextTile {get; set;}
+    public HexTile destination {get; set;}
+    private bool reachedCheckpoint = false;
     public float speed = 0.5f;
+    private Stack<HexTile> _toVisit;
+    private Stack<HexTile> _memory;
     private void Awake() {
-        toVisit = new Stack<HexTile>();
+        _toVisit = new Stack<HexTile>();
+        _memory = new Stack<HexTile>();
     }   
-    // Start is called before the first frame update
-    void Start()
-    {
-
+    private void Start() {
+        EventManager.instance.onConstructEvent += Reroute;
+    }
+    private void OnDisable() {
+        EventManager.instance.onConstructEvent -= Reroute;
     }
 
     // Update is called once per frame
@@ -22,43 +28,78 @@ public class PathNavigator : MonoBehaviour
     {
         Navigate();
     }
-    public void SetDestination(HexTile des)
-    {
-        toVisit = Pathfinder.FindPath(curTile, des);
-    }
-    private void Navigate()
-    {
-        if(toVisit.Count == 0 && curTile == nextTile)
-            return;
-        if(nextTile == null)
-            nextTile = toVisit.Pop();
-        if(Vector3.Distance(transform.position, nextTile.worldPos) < 0.01f)
-        {
-            curTile = nextTile;
-            if(toVisit.Count > 0)
-            {
-                nextTile = toVisit.Pop();
-            }        
-        }
-        //moving 
-        Move();
-    }
-    public void Move()
-    {
-        var step =  speed * Time.deltaTime; // calculate distance to move
-        transform.position = Vector3.MoveTowards(transform.position, nextTile.worldPos, step);
-    }
     public void SetStartPosition(HexTile tile)
     {
         curTile = tile;
         nextTile = curTile;
         transform.position = tile.worldPos;
     }
-    private void PrintStack()
+    public void SetDestination(HexTile des)
     {
-        while(toVisit.Count != 0)
+        destination = des;
+        _toVisit = Pathfinder.FindPath(curTile, des);
+    }
+    private void Navigate()
+    {
+        //no tile to traverse
+        if(_toVisit == null)
+            return;
+        //reach the destination
+        if(_toVisit.Count == 0 && curTile == nextTile && reachedCheckpoint)
+            return;
+        //begin traverse to the first tile
+        if(nextTile == null && _toVisit.Count != 0)
+            nextTile = _toVisit.Pop();
+        //move into next tile's territory
+        if(Vector3.Distance(transform.position, nextTile.worldPos) < GridLayoutManager.DISTANCE_FROM_EDGE_TO_CENTER)
+            curTile = nextTile;
+        //exactly at the center of next tile
+        if(Vector3.Distance(transform.position, nextTile.worldPos) < 0.01f)
         {
-            Debug.Log(toVisit.Pop().offsetPos);
+            reachedCheckpoint = true;
+            if(_toVisit.Count > 0)
+            {
+                nextTile = _toVisit.Pop();
+                reachedCheckpoint = false;
+            }        
         }
+        //moving 
+        Move();
+    }
+    private void Move()
+    {
+        transform.LookAt(nextTile.worldPos);
+        var step =  speed * Time.deltaTime; // calculate distance to move
+        transform.position = Vector3.MoveTowards(transform.position, nextTile.worldPos, step);
+    }
+    private void Reroute(Vector2Int closedPos)
+    {
+        if(isPathClosed(closedPos))
+            SetDestination(destination);
+    }
+    // s1     s2     s1
+    //|5|    |1|    |5|
+    //|4|    |2|    |4|
+    //|3| => |3| => |3|
+    //|2|    |4|    |2|
+    //|1|    |5|    |1|
+    private bool isPathClosed(Vector2Int closedPos)
+    {
+        while(_toVisit.Count != 0)
+        {
+            var top = _toVisit.Pop();
+            if(top.offsetPos == closedPos)
+            {
+                _memory.Clear();
+                return true;
+            }
+            _memory.Push(top);
+        }
+        while(_memory.Count != 0)
+        {
+            var top = _memory.Pop();
+            _toVisit.Push(top);
+        }
+        return false;
     }
 }

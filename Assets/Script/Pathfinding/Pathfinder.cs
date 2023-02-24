@@ -1,8 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 
-public static class Pathfinder
+public class Pathfinder
 {   
     private static Stack<HexTile> traces = new Stack<HexTile>();
     private static SmallHeuriticFirst cmpr = new SmallHeuriticFirst();
@@ -11,17 +10,14 @@ public static class Pathfinder
     private static Dictionary<HexTile, int> costSoFar = new Dictionary<HexTile, int>();
     public static Stack<HexTile> FindPath(HexTile start, HexTile des)
     {
-        Debug.Assert(start != null);
-        Debug.Assert(des != null);
-        Debug.Assert(traces != null);
-        Debug.Assert(frontier != null);
-        Debug.Assert(cameFrom != null);
-        Debug.Assert(costSoFar != null);
         //initialize
         traces.Clear();
         frontier.Clear();
         cameFrom.Clear();
         costSoFar.Clear();
+        
+        if(des.isOccupied == true)
+            return null;
 
         frontier.Add((start, 0));
         cameFrom[start] = null;
@@ -30,7 +26,6 @@ public static class Pathfinder
         while(!frontier.isEmpty())
         {
             var current = frontier.Pop();
-            Debug.Assert(current.Item1 != null);
 
             if(current.Item1 == des)
                 break;
@@ -43,8 +38,8 @@ public static class Pathfinder
                 if(!costSoFar.ContainsKey(next) || newcost < costSoFar[next])
                 {
                     costSoFar[next] = newcost;
-                    int cost = newcost + Utils.HexPosDistance(des, next);
-                    frontier.Add((next, cost));
+                    int fcost = newcost + Utils.HexPosDistance(des, next);
+                    frontier.Add((next, fcost));
                     cameFrom[next] = current.Item1;
                 }
             }
@@ -59,7 +54,6 @@ public static class Pathfinder
                 traces.Push(cameFrom[key]);
                 key = cameFrom[key];
             }
-            // Debug.Assert(traces.Count == Utils.HexPosDistance(start,des));
         }
         return traces;
     }

@@ -286,6 +286,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rover_repivot
       objectReference: {fileID: 0}
+    - target: {fileID: 1047923437315249382, guid: cd26b08272708c54695a9e90c1234ddc, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1047923437315249383, guid: cd26b08272708c54695a9e90c1234ddc, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -452,7 +456,6 @@ GameObject:
   - component: {fileID: 2000566268}
   - component: {fileID: 2000566267}
   - component: {fileID: 2000566269}
-  - component: {fileID: 2000566270}
   m_Layer: 0
   m_Name: EventManager
   m_TagString: Untagged
@@ -501,16 +504,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   navigator: {fileID: 854728885}
   start: {x: -5, y: -4}
-  end: {x: 4, y: 5}
---- !u!114 &2000566270
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2000566266}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10fffecd3aa8eda4fab5717983f0f3d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  end: {x: 3, y: 3}

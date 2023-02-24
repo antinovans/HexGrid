@@ -33,6 +33,9 @@ public class GridLayoutManager : MonoBehaviour
     public Dictionary<Vector2Int, HexRenderer> tileRenderers;
     public static GridLayoutManager instance;
 
+    //global values
+    public static float DISTANCE_FROM_EDGE_TO_CENTER;
+
     private void OnEnable()
     {
         tiles = new Dictionary<Vector2Int, HexTile>();
@@ -46,6 +49,7 @@ public class GridLayoutManager : MonoBehaviour
         else
             Destroy(gameObject);
         DontDestroyOnLoad(gameObject);
+        DISTANCE_FROM_EDGE_TO_CENTER = outerSize * Mathf.Sqrt(3)/2;
     }
     private void Start()
     {
@@ -91,7 +95,7 @@ public class GridLayoutManager : MonoBehaviour
         //updating neighbors
         foreach (var container in tiles)
         {
-            container.Value.neighbors = GetTileContainerNeighbor(container.Value);
+            container.Value.neighbors = GetTileNeighbor(container.Value);
         }
     }
     private void GenerateGridMesh(int x, int y, Vector3 worldPos)
@@ -154,7 +158,7 @@ public class GridLayoutManager : MonoBehaviour
         return new Vector3(xPos, 0, zPos);
     }
     // Calculate neighbors of each tile
-    private List<HexTile> GetTileContainerNeighbor(HexTile tile)
+    private List<HexTile> GetTileNeighbor(HexTile tile)
     {
         List<HexTile> neighbors = new List<HexTile>();
         Vector3Int tileCubeCoor = Utils.OffsetToCube(tile.offsetPos);

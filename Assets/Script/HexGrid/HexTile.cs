@@ -16,15 +16,11 @@ public class HexTile : MonoBehaviour
     public Vector2Int offsetPos {get; set;}
     public Vector3 worldPos {get; set;}
     public List<HexTile> neighbors {get; set;}
-    public bool isOccupied;
-    // public int fCost = 0;    
+    public bool isOccupied;  
     private void Awake() {
         this.neighbors = new List<HexTile>();
         isOccupied = false;
     }
-    // public void ComputefCost(HexTile start, HexTile destination)
-    // {
-    //     fCost = Utils.HexPosDistance(this, start) + Utils.HexPosDistance(this, destination);
-    // }
+
 
 }
